@@ -112,10 +112,7 @@ We also included a robust filter to **detect only actual questions** from the ou
 
 ---
 
-## 📹 Demo
 
-Watch the full walkthrough of the chatbot in action:  
-👉 [Loom Video Link](https://loom.com/) *(replace with actual link)*
 
 ---
 
