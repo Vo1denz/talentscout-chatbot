@@ -5,9 +5,14 @@ import re
 import time
 
 st.set_page_config(page_title="TalentScout AI", page_icon="🤖")
-st.title("🤖 TalentScout Hiring Assistant")
 
-# Initialize session state
+
+if st.sidebar.button("❌ End Conversation"):
+    st.session_state.clear()
+    st.success("👋 Conversation ended. Thank you!")
+    st.stop()
+
+
 if 'step' not in st.session_state:
     st.session_state.step = "greeting"
 if 'candidate_data' not in st.session_state:
@@ -21,12 +26,14 @@ if 'answers' not in st.session_state:
 
 # Step 1: Greet the user
 if st.session_state.step == "greeting":
+    st.title("🤖 TalentScout Hiring Assistant")
     st.success("Hi there! I'm TalentScoutBot, here to help screen your skills.")
     if st.button("Start Application"):
         st.session_state.step = "collect_info"
 
 # Step 2: Collect Candidate Info
 if st.session_state.step == "collect_info":
+    st.header("📝 Candidate Information")
     with st.form("candidate_form"):
         name = st.text_input("Full Name")
         email = st.text_input("Email Address")
@@ -74,8 +81,7 @@ if st.session_state.step == "generate_questions":
                 questions.append(clean[2:].strip())
 
         retries -= 1
-        if len(questions) < 5:
-            time.sleep(1)  # prevent spamming too quickly
+        time.sleep(1)
 
     questions = questions[:5]
     st.session_state.questions = questions
@@ -83,12 +89,12 @@ if st.session_state.step == "generate_questions":
     st.session_state.step = "answer_questions"
     st.rerun()
 
-# Step 4: Show Questions + Input Boxes
+# Step 4: Show Questions
 if st.session_state.step == "answer_questions":
-    st.markdown("### Please answer the following questions")
+    st.header("🧠 Technical Questions")
     with st.form("qa_form"):
         for i, q in enumerate(st.session_state.questions):
-            st.markdown(f"**{q}**")
+            st.markdown(f"**Q{i+1}: {q}**")
             st.session_state.answers[i] = st.text_area(
                 f"Your answer to Q{i+1}",
                 value=st.session_state.answers[i],
@@ -102,7 +108,9 @@ if st.session_state.step == "answer_questions":
 
 # Step 5: Show Summary
 if st.session_state.step == "summary":
+    st.header("📋 Submission Summary")
     st.success("✅ Thank you! Your application has been recorded.")
+
     st.subheader("👤 Candidate Info")
     for key, value in st.session_state.candidate_data.items():
         st.markdown(f"**{key.title()}:** {value}")
@@ -110,4 +118,4 @@ if st.session_state.step == "summary":
     st.subheader("🧠 Your Answers")
     for i, (q, a) in enumerate(zip(st.session_state.questions, st.session_state.answers)):
         st.markdown(f"**Q{i+1}: {q}**")
-        st.markdown(f"✍️ **Your Answer:** {a}")
+        st.markdown(f"✍️ **Answer:** {a}")
